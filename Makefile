@@ -49,12 +49,13 @@ train:
 		-data $(XML_FOLDER) \
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
-		-precalcValBufSize 6000 \
-		-precalcIdxBufSize 6000 \
+		-precalcValBufSize 3000 \
+		-precalcIdxBufSize 3000 \
 		-numPos $(POSITIVE_AMOUNT) \
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w 30 \
-		-h 30
+		-h 30 \
+		-numStages 25
 
 # Clear files
 clean-a:
@@ -69,6 +70,9 @@ clean-a:
 detect:
 	python3 scripts/check.py
 
+webcam:
+	python3 scripts/webcam.py
+
 # Reset
 clean:
 	- rm -f output/*.png
@@ -81,11 +85,9 @@ train-f:
 	make clean
 	make negative
 	@echo Negatives done, starting positives in 2 seconds...
-	sleep 2
 	make positive
 	make vec
 	@echo VEC is finished!
 	@echo starting model training in 3 seconds...
-	sleep 3
 	make train
 	@echo Model is trained!
