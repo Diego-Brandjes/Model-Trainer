@@ -61,8 +61,7 @@ train:
 		-numStages 25
 
 # Clear files
-clean-a:
-	make clean
+clean-a: clean
 	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.png
 	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.png
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
@@ -84,9 +83,7 @@ clean:
 	- rm -f input/*.jpg
 
 # Fully train the model from scratch
-train-f:
-	make clean
-	make negative
+train-f: clean negative
 	@echo Negatives done, starting positives in 2 seconds...
 	make positive
 	make vec
