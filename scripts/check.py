@@ -1,9 +1,10 @@
 import os
 import cv2
+import sys
 
 # Input and output paths
-input_folder = 'input/'  # Replace with the path to your input folder
-output_folder = 'output/'  # Replace with the path to your output folder
+input_folder = sys.argv[1]  # Replace with the path to your input folder
+output_folder = sys.argv[2]  # Replace with the path to your output folder
 
 # Initialize the classifier
 cascade = cv2.CascadeClassifier()

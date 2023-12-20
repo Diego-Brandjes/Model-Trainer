@@ -1,5 +1,5 @@
 # Made by	 : Diego Brandjes 
-# Date		 : 20-12-2023 
+# Date		 : 21-12-2023 
 
 # Makefile for image annotation and creating positive samples
 
@@ -13,30 +13,30 @@
 # - reset	 : 	clears the input files for detection.
 
 # Set paths and variables
-NEGATIVE_IMAGES_FOLDER 		= no_faces
-POSITIVE_IMAGES_FOLDER		= faces
+NEGATIVE_IMAGES_FOLDER 		= false
+POSITIVE_IMAGES_FOLDER		= true
 XML_FOLDER					= xml
 NEGATIVE_ANNOTATION_FILE 	= negative.txt
 POSITIVE_ANNOTATION_FILE 	= positive.txt
 POSITIVE_VECTOR_FILE 		= model.vec
+OUTPUT_FOLDER				= output
+INPUT_FOLDER				= input
 
-POSITIVE_AMOUNT				= 100
-NEGATIVE_AMOUNT				= 120
+load_folders:
+	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	mkdir -p $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	python scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	@NEGATIVE_AMOUNT=$$(ls -1 $(NEGATIVE_IMAGES_FOLDER) | wc -l); \
+		echo $${NEGATIVE_AMOUNT} > negative_amount.tmp;
 
 # Positive
-positive:
-	python scripts/capture.py $(POSITIVE_IMAGES_FOLDER) $(POSITIVE_AMOUNT)			
+annotate:
+	python scripts/createNegative.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
 	opencv_annotation \
 		--maxWindowHeight=1000 \
 		--resizeFactor=3 \
 		--annotations=$(POSITIVE_ANNOTATION_FILE) \
 		--images=$(POSITIVE_IMAGES_FOLDER)
-
-# Negative
-negative:
-	python scripts/capture.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_AMOUNT)
-	python scripts/createNegative.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
-
 
 # Vec
 vec:
@@ -46,6 +46,10 @@ vec:
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-w 30 \
 		-h 30
+	@echo "CONFIRM POSITIVES:"
+	@read USER_INPUT; \
+	echo $$USER_INPUT > positive_amount.tmp
+	@echo "VEC is finished!"
 
 train:
 	opencv_traincascade \
@@ -54,44 +58,37 @@ train:
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
 		-precalcValBufSize 3000 \
 		-precalcIdxBufSize 3000 \
-		-numPos $(POSITIVE_AMOUNT) \
-		-numNeg $(NEGATIVE_AMOUNT) \
+		-numPos $$(cat positive_amount.tmp) \
+		-numNeg $$(cat negative_amount.tmp) \
 		-w 30 \
 		-h 30 \
-		-numStages 25
+		-numStages 20
 
 # Clear files
 clean-a: clean
-	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.png
-	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.png
+
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
 	- rm -f $(NEGATIVE_ANNOTATION_FILE)
 	- rm -f $(POSITIVE_VECTOR_FILE)
+	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	- rm -f negative_amount.tmp positive_amount.tmp
 
 detect:
-	python3 scripts/check.py
+	python3 scripts/check.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
 
 webcam:
 	python3 scripts/webcam.py
 
 # Reset
 clean:
-	- rm -f output/*.png
-	- rm -f input/*.png
-	- rm -f output/*.jpg
-	- rm -f input/*.jpg
-
-wait_for_keypress:
-	@echo Press any key to continue...
-	@pause > nul
 	
 # Fully train the model from scratch
-train-f: wait_for_keypress clean negative
-	make wait_for_keypress
-	make positive
-	make vec
-	@echo VEC is finished!
-	@echo starting model training in 3 seconds...
+train-f: clean-a load_folders annotate vec
+
+	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
+	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
 	make train
 	@echo Model is trained!
+	make clean-a
+	mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)

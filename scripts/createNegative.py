@@ -3,7 +3,7 @@ import sys
 
 def write_image_filenames_to_txt(folder_path, output_txt):
     # Get a list of all image filenames in the folder
-    image_filenames = [os.path.join('no_faces', file) for file in os.listdir(folder_path) if file.endswith(('.png', '.jpg', '.jpeg', '.JPG'))]
+    image_filenames = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(('.png', '.jpg', '.jpeg', '.JPG'))]
 
     # Write image filenames to the output text file
     with open(output_txt, 'w') as txt_file:
