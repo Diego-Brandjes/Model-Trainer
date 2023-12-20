@@ -58,9 +58,9 @@ train:
 
 # Clear files
 clean:
-	- rm -f $(POSITIVE_IMAGES_FOLDER)/*
-	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*
-	- rm -f $(XML_FOLDER)/*
+	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.jpg
+	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.jpg
+	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
 
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
 	- rm -f $(NEGATIVE_ANNOTATION_FILE)
@@ -71,8 +71,8 @@ detect:
 
 # Reset
 reset:
-	- rm -f output/*
-	- rm -f input/*
+	- rm -f output/*.jpg
+	- rm -f input/*.jpg
 
 full:
 	make clean
