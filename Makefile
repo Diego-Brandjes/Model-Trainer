@@ -1,3 +1,6 @@
+# Made by	 : Diego Brandjes 
+# Date		 : 20-12-2023 
+
 # Makefile for image annotation and creating positive samples
 
 # - positive : 	to create and annotate positive images.
