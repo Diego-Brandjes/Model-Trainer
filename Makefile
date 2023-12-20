@@ -20,9 +20,6 @@ POSITIVE_VECTOR_FILE 		= model.vec
 POSITIVE_AMOUNT				= 100
 NEGATIVE_AMOUNT				= 120
 
-# image filetype used
-FILETYPE					= .png
-
 # Positive
 positive:
 	python scripts/capture.py $(POSITIVE_IMAGES_FOLDER) $(POSITIVE_AMOUNT)			
@@ -60,11 +57,11 @@ train:
 		-h 30
 
 # Clear files
-clean:
-	- rm -f $(POSITIVE_IMAGES_FOLDER)/*$(FILETYPE)
-	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*$(FILETYPE)
+clean-a:
+	make clean
+	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.png
+	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.png
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
-
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
 	- rm -f $(NEGATIVE_ANNOTATION_FILE)
 	- rm -f $(POSITIVE_VECTOR_FILE)
@@ -73,9 +70,11 @@ detect:
 	python3 scripts/check.py
 
 # Reset
-reset:
-	- rm -f output/*$(FILETYPE)
-	- rm -f input/*$(FILETYPE)
+clean:
+	- rm -f output/*.png
+	- rm -f input/*.png
+	- rm -f output/*.jpg
+	- rm -f input/*.jpg
 
 # Fully train the model from scratch
 train-f:
