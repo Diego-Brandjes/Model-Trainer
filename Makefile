@@ -17,8 +17,8 @@ NEGATIVE_ANNOTATION_FILE 	= negative.txt
 POSITIVE_ANNOTATION_FILE 	= positive.txt
 POSITIVE_VECTOR_FILE 		= model.vec
 
-POSITIVE_AMOUNT				= 1
-NEGATIVE_AMOUNT				= 1
+POSITIVE_AMOUNT				= 100
+NEGATIVE_AMOUNT				= 120
 
 # Positive
 positive:
@@ -57,11 +57,11 @@ train:
 		-h 30
 
 # Clear files
-clean:
-	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.jpg
-	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.jpg
+clean-a:
+	make clean
+	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.png
+	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.png
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
-
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
 	- rm -f $(NEGATIVE_ANNOTATION_FILE)
 	- rm -f $(POSITIVE_VECTOR_FILE)
@@ -70,11 +70,14 @@ detect:
 	python3 scripts/check.py
 
 # Reset
-reset:
+clean:
+	- rm -f output/*.png
+	- rm -f input/*.png
 	- rm -f output/*.jpg
 	- rm -f input/*.jpg
 
-full:
+# Fully train the model from scratch
+train-f:
 	make clean
 	make negative
 	@echo Negatives done, starting positives in 2 seconds...
