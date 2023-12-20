@@ -82,9 +82,13 @@ clean:
 	- rm -f output/*.jpg
 	- rm -f input/*.jpg
 
+wait_for_keypress:
+	@echo Press any key to continue...
+	@pause > nul
+	
 # Fully train the model from scratch
-train-f: clean negative
-	@echo Negatives done, starting positives in 2 seconds...
+train-f: wait_for_keypress clean negative
+	make wait_for_keypress
 	make positive
 	make vec
 	@echo VEC is finished!
