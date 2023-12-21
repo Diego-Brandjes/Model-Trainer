@@ -1,16 +1,17 @@
 # Made by	 : Diego Brandjes 
 # Date		 : 21-12-2023 
 
-# Makefile for image annotation and creating positive samples
+# Makefile for image annotation and creating a trained model
 
-# - positive : 	to create and annotate positive images.
-# - negative : 	to create and annotate negative images.
-# - vec		 : 	to create the vec file.
-# - train	 : 	to train the model.
-# - clean	 : 	removes all model data, used for retraining model.
+# - load_folders : 	to create and load (new)folders.
+# - annotate 	 : 	to create and annotate images.
+# - vec		 	 : 	to create the vec file.
+# - train	 	 : 	to train the model.
+# - train-s	 	 : 	to only retrain the model on new vec.
+# - clean	 	 : 	removes all model data, used for training model.
 
-# - detect	 : 	run to detect faces in images.
-# - reset	 : 	clears the input files for detection.
+# - detect	 	 : 	run to detect faces in images.
+# - webcam	 	 : 	run to detect faces in webcam video.
 
 # Set paths and variables
 NEGATIVE_IMAGES_FOLDER 		= false
@@ -31,7 +32,7 @@ load_folders:
 	mkdir $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 	python scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 
-# Positive
+# annotate
 annotate:
 	python scripts/create_negatives.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
 	opencv_annotation \
