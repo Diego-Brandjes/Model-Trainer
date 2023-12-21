@@ -12,6 +12,7 @@ __pycache__/
 
 *.txt
 *.vec
+*.tmp
 
 # Distribution / packaging
 .Python

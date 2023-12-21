@@ -22,6 +22,10 @@ POSITIVE_VECTOR_FILE 		= model.vec
 OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 
+RED := $(shell tput setaf 1)
+GREEN := $(shell tput setaf 2)
+RESET := $(shell tput sgr0)
+
 load_folders:
 	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 	mkdir $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
@@ -35,6 +39,7 @@ annotate:
 		--resizeFactor=3 \
 		--annotations=$(POSITIVE_ANNOTATION_FILE) \
 		--images=$(POSITIVE_IMAGES_FOLDER)
+	@echo "$(GREEN)DONE ANNOTATING$(RESET)"
 
 # Vec
 vec:
@@ -44,17 +49,25 @@ vec:
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-w 30 \
 		-h 30
+		@echo "$(GREEN)VEC CREATED$(RESET)"
+		@echo "$(RED)Confirm positive count$(RESET)"
 		python scripts/confirm_positives.py
 
-train:
+#POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
+#NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
+
+POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
+NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
+
+train-s:
 	opencv_traincascade \
 		-data $(XML_FOLDER) \
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
 		-precalcValBufSize 3000 \
 		-precalcIdxBufSize 3000 \
-		-numPos $$(cat positive_amount.tmp) \
-		-numNeg $$(cat negative_amount.tmp) \
+		-numPos $(POSITIVE_AMOUNT) \
+		-numNeg $(NEGATIVE_AMOUNT) \
 		-w 30 \
 		-h 30 \
 		-numStages 20
@@ -78,11 +91,11 @@ webcam:
 	python3 scripts/webcam.py
 	
 # Fully train the model from scratch
-train-f: clean load_folders annotate vec
+train: clean load_folders annotate vec
 
+	- mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)	
 	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
 	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
-	make train
+	make train-s
 	make clean
-	- mkdir $(INPUT_FOLDER) $(OUTPUT_FOLDER)
-	@echo Model is trained! XML is ready for use
+	@echo "$(GREEN)Model is trained! XML is ready for use$(RESET)"
