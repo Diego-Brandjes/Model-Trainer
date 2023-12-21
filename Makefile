@@ -3,6 +3,8 @@
 
 # Makefile for image annotation and creating a trained model
 
+# ___UNIX VERSION___
+
 # - load_folders : 	to create and load (new)folders.
 # - annotate 	 : 	to create and annotate images.
 # - vec		 	 : 	to create the vec file.
@@ -55,11 +57,11 @@ vec:
 		@echo "$(RED)Confirm positive count$(RESET)"
 		python3 scripts/confirm_positives.py
 
-POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
-NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
+#POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
+#NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
 
-#POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
-#NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
+POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
+NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
 
 train-s:
 	opencv_traincascade \
