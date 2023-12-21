@@ -13,6 +13,8 @@
 # - detect	 	 : 	run to detect faces in images.
 # - webcam	 	 : 	run to detect faces in webcam video.
 
+#   ____WINDOWS VERSION____
+
 # Set paths and variables
 NEGATIVE_IMAGES_FOLDER 		= false
 POSITIVE_IMAGES_FOLDER		= true
@@ -29,8 +31,10 @@ GREEN := $(shell tput setaf 2)
 RESET := $(shell tput sgr0)
 
 load_folders:
-	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
-	mkdir $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	-@rmdir /S /Q $(POSITIVE_IMAGES_FOLDER%)
+	-@rmdir /S /Q $(NEGATIVE_IMAGES_FOLDER%)
+	@if not exist $(POSITIVE_IMAGES_FOLDER) mkdir $(POSITIVE_IMAGES_FOLDER)
+	@if not exist $(NEGATIVE_IMAGES_FOLDER) mkdir $(NEGATIVE_IMAGES_FOLDER)
 	python3 scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 
 # annotate
@@ -68,7 +72,7 @@ train-s:
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
 		-precalcValBufSize 3000 \
 		-precalcIdxBufSize 3000 \
-		-numPos $(POSITIVE_AMOUNT) \
+		-numPos 12 \
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
@@ -76,33 +80,29 @@ train-s:
 
 # Clear files
 clean:
-	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
-	- rm -f $(POSITIVE_ANNOTATION_FILE)
-	- rm -f $(NEGATIVE_ANNOTATION_FILE)
-	- rm -f $(POSITIVE_VECTOR_FILE)
-	- rm -f negative_amount.tmp positive_amount.tmp
+	-@ del /F $(POSITIVE_ANNOTATION_FILE)
+	-@ del /F $(NEGATIVE_ANNOTATION_FILE)
+	-@ del /F $(POSITIVE_VECTOR_FILE)
+	-@ del /F negative_amount.tmp 
+	-@ del /F positive_amount.tmp
 
-	- rm -rf $(INPUT_FOLDER) $(OUTPUT_FOLDER)
-	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	-@ rmdir /S /Q $(INPUT_FOLDER)
+	-@ rmdir /S /Q $(OUTPUT_FOLDER)
+	-@ rmdir /S /Q $(POSITIVE_IMAGES_FOLDER)
+	-@ rmdir /S /Q $(NEGATIVE_IMAGES_FOLDER)
 
 detect:
-	- mkdir -p $(OUTPUT_FOLDER)	
+	@if not exist $(OUTPUT_FOLDER) mkdir $(OUTPUT_FOLDER)
 	python3 scripts/check_images.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
-	@echo "$(GREEN)Use 'make reset' to reset the input and output folders.$(RESET)"
-
-reset:
-	- rm -f $(INPUT_FOLDER)/* $(OUTPUT_FOLDER)/*
 
 webcam:
 	python3 scripts/webcam.py
 	
 # Fully train the model from scratch
 train: clean load_folders annotate vec
-
 	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
 	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
 	make train-s
 	make clean
 	@echo "$(GREEN)Model is trained! XML is ready for use$(RESET)"
-	- mkdir -p $(INPUT_FOLDER)	
-
+	@if not exist $(INPUT_FOLDER) mkdir $(INPUT_FOLDER)
