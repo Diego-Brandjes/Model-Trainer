@@ -34,6 +34,17 @@ def install_requirements():
         else:
             print("Skipping OpenCV installation as it is already installed.")
 
+
+        conemu_url = "https://github.com/Maximus5/ConEmu/releases/download/v23.07.24/ConEmuSetup.230724.exe"
+        
+        # Download the file
+        response = requests.get(conemu_url)
+        with open("ConEmuSetup.exe", "wb") as file:
+            file.write(response.content)
+
+        # Run the installer
+        subprocess.run(["ConEmuSetup.exe"])
+
     except Exception as e:
         print(f"Error: {e}")
 
