@@ -26,12 +26,10 @@ load_folders:
 	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 	mkdir -p $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 	python scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
-	@NEGATIVE_AMOUNT=$$(ls -1 $(NEGATIVE_IMAGES_FOLDER) | wc -l); \
-		echo $${NEGATIVE_AMOUNT} > negative_amount.tmp;
 
 # Positive
 annotate:
-	python scripts/createNegative.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
+	python scripts/create_negatives.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
 	opencv_annotation \
 		--maxWindowHeight=1000 \
 		--resizeFactor=3 \
@@ -46,10 +44,7 @@ vec:
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-w 30 \
 		-h 30
-	@echo "CONFIRM POSITIVES:"
-	@read USER_INPUT; \
-	echo $$USER_INPUT > positive_amount.tmp
-	@echo "VEC is finished!"
+		python scripts/confirm_positives.py
 
 train:
 	opencv_traincascade \
@@ -75,7 +70,9 @@ clean-a: clean
 	- rm -f negative_amount.tmp positive_amount.tmp
 
 detect:
-	python3 scripts/check.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+
+	python3 scripts/check_images.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+	- rm -f $(OUTPUT_FOLDER)/*
 
 webcam:
 	python3 scripts/webcam.py
@@ -89,6 +86,6 @@ train-f: clean-a load_folders annotate vec
 	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
 	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
 	make train
-	@echo Model is trained!
 	make clean-a
-	mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+	- mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+	@echo Model is trained! XML is ready for use
