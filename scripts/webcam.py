@@ -32,5 +32,6 @@ while True:
     if c == 27:
         break
 
+# Release the camera before destroying the window
 camera.release()
 cv2.destroyAllWindows()

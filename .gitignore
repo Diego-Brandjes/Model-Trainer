@@ -3,12 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# C extensions
+*.so
+
 # Images
 *.jpg
 *.png
 
-# C extensions
-*.so
+*.txt
+*.vec
+*.tmp
 
 # Distribution / packaging
 .Python

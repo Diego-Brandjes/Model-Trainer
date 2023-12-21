@@ -1,39 +1,46 @@
-# Makefile for image annotation and creating positive samples
+# Made by	 : Diego Brandjes 
+# Date		 : 21-12-2023 
 
-# - positive : 	to create and annotate positive images.
-# - negative : 	to create and annotate negative images.
-# - vec		 : 	to create the vec file.
-# - train	 : 	to train the model.
-# - clean	 : 	removes all model data, used for retraining model.
+# Makefile for image annotation and creating a trained model
 
-# - detect	 : 	run to detect faces in images.
-# - reset	 : 	clears the input files for detection.
+# - load_folders : 	to create and load (new)folders.
+# - annotate 	 : 	to create and annotate images.
+# - vec		 	 : 	to create the vec file.
+# - train	 	 : 	to train the model.
+# - train-s	 	 : 	to only retrain the model on new vec.
+# - clean	 	 : 	removes all model data, used for training model.
+
+# - detect	 	 : 	run to detect faces in images.
+# - webcam	 	 : 	run to detect faces in webcam video.
 
 # Set paths and variables
-NEGATIVE_IMAGES_FOLDER 		= no_faces
-POSITIVE_IMAGES_FOLDER		= faces
+NEGATIVE_IMAGES_FOLDER 		= false
+POSITIVE_IMAGES_FOLDER		= true
 XML_FOLDER					= xml
 NEGATIVE_ANNOTATION_FILE 	= negative.txt
 POSITIVE_ANNOTATION_FILE 	= positive.txt
 POSITIVE_VECTOR_FILE 		= model.vec
+OUTPUT_FOLDER				= output
+INPUT_FOLDER				= input
 
-POSITIVE_AMOUNT				= 100
-NEGATIVE_AMOUNT				= 120
+RED := $(shell tput setaf 1)
+GREEN := $(shell tput setaf 2)
+RESET := $(shell tput sgr0)
 
-# Positive
-positive:
-	python scripts/capture.py $(POSITIVE_IMAGES_FOLDER) $(POSITIVE_AMOUNT)			
+load_folders:
+	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	mkdir $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	python scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+
+# annotate
+annotate:
+	python scripts/create_negatives.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
 	opencv_annotation \
 		--maxWindowHeight=1000 \
 		--resizeFactor=3 \
 		--annotations=$(POSITIVE_ANNOTATION_FILE) \
 		--images=$(POSITIVE_IMAGES_FOLDER)
-
-# Negative
-negative:
-	python scripts/capture.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_AMOUNT)
-	python scripts/createNegative.py $(NEGATIVE_IMAGES_FOLDER) $(NEGATIVE_ANNOTATION_FILE)
-
+	@echo "$(GREEN)DONE ANNOTATING$(RESET)"
 
 # Vec
 vec:
@@ -43,49 +50,53 @@ vec:
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-w 30 \
 		-h 30
+		@echo "$(GREEN)VEC CREATED$(RESET)"
+		@echo "$(RED)Confirm positive count$(RESET)"
+		python scripts/confirm_positives.py
 
-train:
+#POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
+#NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
+
+POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
+NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
+
+train-s:
 	opencv_traincascade \
 		-data $(XML_FOLDER) \
 		-vec $(POSITIVE_VECTOR_FILE) \
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
-		-precalcValBufSize 6000 \
-		-precalcIdxBufSize 6000 \
+		-precalcValBufSize 3000 \
+		-precalcIdxBufSize 3000 \
 		-numPos $(POSITIVE_AMOUNT) \
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w 30 \
-		-h 30
+		-h 30 \
+		-numStages 20
 
 # Clear files
-clean-a:
-	make clean
-	- rm -f $(POSITIVE_IMAGES_FOLDER)/*.png
-	- rm -f $(NEGATIVE_IMAGES_FOLDER)/*.png
+clean:
+
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
 	- rm -f $(NEGATIVE_ANNOTATION_FILE)
 	- rm -f $(POSITIVE_VECTOR_FILE)
+	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	- rm -f negative_amount.tmp positive_amount.tmp
 
 detect:
-	python3 scripts/check.py
 
-# Reset
-clean:
-	- rm -f output/*.png
-	- rm -f input/*.png
-	- rm -f output/*.jpg
-	- rm -f input/*.jpg
+	python3 scripts/check_images.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+	- rm -f $(OUTPUT_FOLDER)/*
 
+webcam:
+	python3 scripts/webcam.py
+	
 # Fully train the model from scratch
-train-f:
+train: clean load_folders annotate vec
+
+	- mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)	
+	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
+	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
+	make train-s
 	make clean
-	make negative
-	@echo Negatives done, starting positives in 2 seconds...
-	sleep 2
-	make positive
-	make vec
-	@echo VEC is finished!
-	@echo starting model training in 3 seconds...
-	sleep 3
-	make train
-	@echo Model is trained!
+	@echo "$(GREEN)Model is trained! XML is ready for use$(RESET)"
