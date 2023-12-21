@@ -26,13 +26,6 @@ OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 BOX_SIZE					= 30
 
-RED := \033[0;31m
-GREEN := \033[0;32m
-RESET := \033[0m
-
-print:
-	@echo "$(RED)This is red text.$(RESET)"
-	@echo "$(GREEN)This is green text.$(RESET)"
 
 load_folders:
 	-@rmdir /S /Q $(POSITIVE_IMAGES_FOLDER%)
