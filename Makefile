@@ -55,11 +55,11 @@ vec:
 		@echo "$(RED)Confirm positive count$(RESET)"
 		python3 scripts/confirm_positives.py
 
-#POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
-#NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
+POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
+NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
 
-POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
-NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
+#POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
+#NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
 
 train-s:
 	opencv_traincascade \
@@ -104,4 +104,5 @@ train: clean load_folders annotate vec
 	make train-s
 	make clean
 	@echo "$(GREEN)Model is trained! XML is ready for use$(RESET)"
-	- mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)	
+	- mkdir -p $(INPUT_FOLDER)	
+
