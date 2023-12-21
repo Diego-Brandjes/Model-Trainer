@@ -24,7 +24,7 @@ INPUT_FOLDER				= input
 
 load_folders:
 	- rm -rf $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
-	mkdir -p $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	mkdir $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 	python scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
 
 # Positive
@@ -60,7 +60,7 @@ train:
 		-numStages 20
 
 # Clear files
-clean-a: clean
+clean:
 
 	- rm -f $(filter-out $(XML_FOLDER)/cascade.xml, $(wildcard $(XML_FOLDER)/*.xml))
 	- rm -f $(POSITIVE_ANNOTATION_FILE)
@@ -76,16 +76,13 @@ detect:
 
 webcam:
 	python3 scripts/webcam.py
-
-# Reset
-clean:
 	
 # Fully train the model from scratch
-train-f: clean-a load_folders annotate vec
+train-f: clean load_folders annotate vec
 
 	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
 	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
 	make train
-	make clean-a
-	- mkdir -p $(INPUT_FOLDER) $(OUTPUT_FOLDER)
+	make clean
+	- mkdir $(INPUT_FOLDER) $(OUTPUT_FOLDER)
 	@echo Model is trained! XML is ready for use
