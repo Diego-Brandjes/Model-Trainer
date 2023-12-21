@@ -83,9 +83,8 @@ clean:
 	- rm -f negative_amount.tmp positive_amount.tmp
 
 detect:
-
+	- mkdir $(OUTPUT_FOLDER)	
 	python3 scripts/check_images.py $(INPUT_FOLDER) $(OUTPUT_FOLDER)
-	- rm -f $(OUTPUT_FOLDER)/*
 
 webcam:
 	python3 scripts/webcam.py
@@ -93,9 +92,9 @@ webcam:
 # Fully train the model from scratch
 train: clean load_folders annotate vec
 
-	- mkdir $(INPUT_FOLDER) $(OUTPUT_FOLDER)	
 	@echo "POSITIVE_AMOUNT: $$(cat positive_amount.tmp)"
 	@echo "NEGATIVE_AMOUNT: $$(cat negative_amount.tmp)"
 	make train-s
 	make clean
 	@echo "$(GREEN)Model is trained! XML is ready for use$(RESET)"
+	- mkdir $(INPUT_FOLDER)	
