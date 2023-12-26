@@ -69,7 +69,7 @@ train-s:
 		-bg $(NEGATIVE_ANNOTATION_FILE) \
 		-precalcValBufSize 3000 \
 		-precalcIdxBufSize 3000 \
-		-numPos 12 \
+		-numPos $(POSITIVE_AMOUNT) \
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
