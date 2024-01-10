@@ -92,10 +92,10 @@ def main():
     true_folder = sys.argv[1]
     false_folder = sys.argv[2]
 
-    if int(sys.argv[3]) >= 130:
+    if int(sys.argv[3]) >= 50:
         image_size = sys.argv[3]
     else: 
-        image_size = 130
+        image_size = 50
 
     # Copy items from the first folder
     copy_items(has_true, true_folder)
