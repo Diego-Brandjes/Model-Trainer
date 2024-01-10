@@ -27,7 +27,7 @@ def rename_files(folder_path, new_prefix):
         
         print(f"Renamed: {filename} to {new_filename}")
 
-def resize_images(base_folder):
+def resize_images(base_folder, image_size):
     # Check if the base folder path exists
     if not os.path.exists(base_folder):
         print(f"The folder '{base_folder}' does not exist.")
@@ -58,8 +58,8 @@ def resize_images(base_folder):
             # Crop the image to the calculated square
             cropped_image = image[top:bottom, left:right]
 
-            # Resize the cropped image to the desired size (100x100 pixels)
-            resized_image = cv2.resize(cropped_image, (130, 130), interpolation=cv2.INTER_AREA)
+            # Resize the cropped image to the desired size
+            resized_image = cv2.resize(cropped_image, (int(image_size), int(image_size)), interpolation=cv2.INTER_AREA)
 
             # Save the resized image
             cv2.imwrite(file_path, resized_image)
@@ -92,6 +92,11 @@ def main():
     true_folder = sys.argv[1]
     false_folder = sys.argv[2]
 
+    if int(sys.argv[3]) >= 130:
+        image_size = sys.argv[3]
+    else: 
+        image_size = 130
+
     # Copy items from the first folder
     copy_items(has_true, true_folder)
 
@@ -102,8 +107,8 @@ def main():
     rename_files(false_folder, "f")
 
     # Call the function to resize images
-    resize_images(true_folder)
-    resize_images(false_folder)
+    resize_images(true_folder, image_size)
+    resize_images(false_folder, image_size)
    
     print(f"\nItems copied to destination folders")
 
