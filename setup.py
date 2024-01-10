@@ -1,6 +1,10 @@
 import subprocess
 import requests
+import zipfile
+import io
+import os
 
+# INSTALLER FOR UNIX SYSTEMS
 def check_opencv_installed():
     try:
         # Attempt to import OpenCV
@@ -12,23 +16,28 @@ def check_opencv_installed():
         return False
 
 def install_requirements():
-    try:          
-        # Install the required packages using pip
-        subprocess.check_call(['pip', 'install', 'opencv-python'])
-
-        print("All required packages installed successfully.")
-
+    try:
         if not check_opencv_installed():
-            # URL of the OpenCV installer
-            opencv_url = "https://sourceforge.net/projects/opencvlibrary/files/3.4.16/opencv-3.4.16-vc14_vc15.exe/download"
+            # URL of the OpenCV zip file
+            opencv_url = "https://github.com/opencv/opencv/archive/3.4.16.zip"
 
             # Download the file
             response = requests.get(opencv_url)
-            with open("opencv_installer.exe", "wb") as file:
-                file.write(response.content)
+            
+            # Extract the contents of the ZIP file
+            with zipfile.ZipFile(io.BytesIO(response.content), "r") as zip_ref:
+                zip_ref.extractall("opencv")
 
-            # Run the installer
-            subprocess.run(["opencv_installer.exe"])
+            print("OpenCV extracted successfully.")
+
+            # Build and install OpenCV
+            opencv_source_dir = os.path.join("opencv", "opencv-3.4.16")
+            opencv_build_dir = os.path.join(opencv_source_dir, "build")
+
+            os.makedirs(opencv_build_dir, exist_ok=True)
+            subprocess.run(["cmake", opencv_source_dir], cwd=opencv_build_dir)
+            subprocess.run(["make"], cwd=opencv_build_dir)
+            subprocess.run(["sudo", "make", "install"], cwd=opencv_build_dir)
 
             print("OpenCV installed successfully.")
         else:
@@ -39,3 +48,4 @@ def install_requirements():
 
 if __name__ == "__main__":
     install_requirements()
+    
