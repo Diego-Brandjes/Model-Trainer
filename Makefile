@@ -27,7 +27,7 @@ POSITIVE_VECTOR_FILE 		= model.vec
 OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 BOX_SIZE					= 30
-IMAGE_SIZE					= 300
+IMAGE_SIZE					= 128
 
 
 load_folders:
