@@ -1,3 +1,4 @@
+import cv2
 import os
 import shutil
 import sys
@@ -16,7 +17,7 @@ def rename_files(folder_path, new_prefix):
         old_path = os.path.join(folder_path, filename)
         
         # Create a new filename with the specified prefix and a number
-        new_filename = f"{new_prefix}_{i}.jpg"
+        new_filename = f"{new_prefix}_{i}.png"
         
         # Construct the new path for the file
         new_path = os.path.join(folder_path, new_filename)
@@ -25,6 +26,44 @@ def rename_files(folder_path, new_prefix):
         os.rename(old_path, new_path)
         
         print(f"Renamed: {filename} to {new_filename}")
+
+def resize_images(base_folder):
+    # Check if the base folder path exists
+    if not os.path.exists(base_folder):
+        print(f"The folder '{base_folder}' does not exist.")
+        return
+    
+    # Iterate through each folder and subfolder in the base folder
+    for folder_name, _, files in os.walk(base_folder):
+        for filename in files:
+            file_path = os.path.join(folder_name, filename)
+            
+            # Open the image file
+            try:
+                image = cv2.imread(file_path)
+            except Exception as e:
+                print(f"Error opening {filename}: {e}")
+                continue
+
+            # Determine the dimensions of the box (the shorter side)
+            x_img, y_img = image.shape[1], image.shape[0]
+            box_size = min(x_img, y_img)
+
+            # Calculate the coordinates for cropping to a square
+            left = (x_img - box_size) // 2
+            top = (y_img - box_size) // 2
+            right = left + box_size
+            bottom = top + box_size
+
+            # Crop the image to the calculated square
+            cropped_image = image[top:bottom, left:right]
+
+            # Resize the cropped image to the desired size (100x100 pixels)
+            resized_image = cv2.resize(cropped_image, (130, 130), interpolation=cv2.INTER_AREA)
+
+            # Save the resized image
+            cv2.imwrite(file_path, resized_image)
+            print(f"resized {filename}")
 
 
 def copy_items(src_folder, dest_folder):
@@ -59,8 +98,12 @@ def main():
     # Copy items from the second folder
     copy_items(has_false, false_folder)
 
-    rename_files(true_folder, "true")
-    rename_files(false_folder, "false")
+    rename_files(true_folder, "t")
+    rename_files(false_folder, "f")
+
+    # Call the function to resize images
+    resize_images(true_folder)
+    resize_images(false_folder)
    
     print(f"\nItems copied to destination folders")
 
