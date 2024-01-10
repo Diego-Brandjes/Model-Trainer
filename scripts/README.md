@@ -12,8 +12,9 @@ The amount will be saved to a .tmp file which is read in the makefile later on.
 This script will ask the user to supply two folders for images, eg. a folder with images of faces and one with pictures without faces.
 
 They will be copied to a local folder so the OpenCV bash script can access them. 
+Then they will be renamed to the format of "true_xx" or "false_xx".
 
-*note: these folders will be deleted after the training is finished.*
+*note: these new folders will be deleted after the training is finished. The originals will still exist.*
 
 ### create_negatives
 
