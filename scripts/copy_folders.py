@@ -44,6 +44,8 @@ def copy_items(src_folder, dest_folder):
 
 def main():
     # Prompt the user for folder paths
+    print("Make sure the folders don't contain images using the 'false_number' or 'true_number' format")
+
     has_true = input("Enter the path of the True folder: ")
     has_false = input("Enter the path of the False folder: ")
 
