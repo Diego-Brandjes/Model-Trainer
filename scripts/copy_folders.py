@@ -49,9 +49,6 @@ def main():
     has_true = input("Enter the path of the True folder: ")
     has_false = input("Enter the path of the False folder: ")
 
-    rename_files(has_true, "true")
-    rename_files(has_false, "false")
-
     # Command-line arguments for source folders and destination folder
     true_folder = sys.argv[1]
     false_folder = sys.argv[2]
@@ -61,6 +58,9 @@ def main():
 
     # Copy items from the second folder
     copy_items(has_false, false_folder)
+
+    rename_files(true_folder, "true")
+    rename_files(false_folder, "false")
    
     print(f"\nItems copied to destination folders")
 
