@@ -1,9 +1,12 @@
 # Made by	 : Diego Brandjes 
-# Date		 : 21-12-2023 
+# Date		 : 10-01-2024 
 
 # Makefile for image annotation and creating a trained model
 
-# - load_folders : 	to create and load (new)folders. Will also rename all files in the folders prior to copying.
+
+# ___Windows Version___
+
+# - handle_folders : 	to create and load (new)folders. Will also rename and resize all files in the folders prior to copying.
 # - annotate 	 : 	to create and annotate images.
 # - vec		 	 : 	to create the vec file.
 # - train	 	 : 	to train the model.
@@ -13,11 +16,10 @@
 # - detect	 	 : 	run to detect faces in images.
 # - webcam	 	 : 	run to detect faces in webcam video.
 
-#   ____WINDOWS VERSION____
 
 # Set paths and variables
-NEGATIVE_IMAGES_FOLDER 		= false
-POSITIVE_IMAGES_FOLDER		= true
+NEGATIVE_IMAGES_FOLDER 		= false_faces
+POSITIVE_IMAGES_FOLDER		= true_faces
 XML_FOLDER					= xml
 NEGATIVE_ANNOTATION_FILE 	= negative.txt
 POSITIVE_ANNOTATION_FILE 	= positive.txt
@@ -25,6 +27,7 @@ POSITIVE_VECTOR_FILE 		= model.vec
 OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 BOX_SIZE					= 30
+IMAGE_SIZE					= 300
 
 
 load_folders:
@@ -32,7 +35,7 @@ load_folders:
 	-@rmdir /S /Q $(NEGATIVE_IMAGES_FOLDER%)
 	@if not exist $(POSITIVE_IMAGES_FOLDER) mkdir $(POSITIVE_IMAGES_FOLDER)
 	@if not exist $(NEGATIVE_IMAGES_FOLDER) mkdir $(NEGATIVE_IMAGES_FOLDER)
-	python3 scripts/copy_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER)
+	python3 scripts/handle_folders.py $(POSITIVE_IMAGES_FOLDER) $(NEGATIVE_IMAGES_FOLDER) $(IMAGE_SIZE)
 
 # annotate
 annotate:
@@ -54,13 +57,11 @@ vec:
 		-h $(BOX_SIZE)
 		@echo "$(GREEN)VEC CREATED$(RESET)"
 		@echo "$(RED)Confirm positive count$(RESET)"
-		python3 scripts/confirm_positives.py
+		python3 scripts/confirm_samples.py
 
-POSITIVE_AMOUNT := $(shell type positive_amount.tmp) #use on windows devices
+# create the .tmp filed to store sample amounts. Use on windows devices
+POSITIVE_AMOUNT := $(shell type positive_amount.tmp) 
 NEGATIVE_AMOUNT := $(shell type negative_amount.tmp)
-
-#POSITIVE_AMOUNT := $(shell cat positive_amount.tmp) # use on UNIX
-#NEGATIVE_AMOUNT := $(shell cat negative_amount.tmp)
 
 train-s:
 	opencv_traincascade \
@@ -73,7 +74,7 @@ train-s:
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
-		-numStages 20
+		-numStages 30
 
 # Clear files
 clean:

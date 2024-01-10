@@ -1,4 +1,4 @@
-# Image Recognition
+# Image Recognition Model Trainer (IRMT)
 
 
 ## Dependencies
@@ -25,13 +25,13 @@ This will open the program in the command line and promt you to enter two filepa
 
 After entering these folders they will be checked and trained upon. 
 
-The user has to enter the amount of positives the VEC file shows in the command line.
+The user has to enter the amount of samples the VEC file shows in the command line.
 
 ```
 VEC CREATED
-Confirm positive count
-python scripts/confirm_positives.py
-CONFIRM POSITIVES: <user input here>
+Confirm sample count
+python scripts/confirm_samples.py
+CONFIRM SAMPLES: <user input here>
 ```
 
 After this is done the user can wait until the cascade.xml is finished.
