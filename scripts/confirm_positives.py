@@ -1,7 +1,7 @@
 def main():
     user_input = 0
     user_input = input("CONFIRM POSITIVES: ")  # Prompt the user for input
-    user_input = user_input * 0.9
+    user_input = user_input * 0.8
     round(user_input)
 
     file_path = "positive_amount.tmp"
