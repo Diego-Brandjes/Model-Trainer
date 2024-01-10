@@ -1,11 +1,11 @@
 # Made by	 : Diego Brandjes 
-# Date		 : 21-12-2023 
+# Date		 : 10-01-2024 
 
 # Makefile for image annotation and creating a trained model
 
 # ___UNIX VERSION___
 
-# - load_folders : 	to create and load (new)folders.
+# - load_folders : 	to create and load (new)folders. Will also rename all files in the folders prior to copying.
 # - annotate 	 : 	to create and annotate images.
 # - vec		 	 : 	to create the vec file.
 # - train	 	 : 	to train the model.
