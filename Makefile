@@ -74,7 +74,7 @@ train-s:
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
-		-numStages 20
+		-numStages 30
 
 # Clear files
 clean:
