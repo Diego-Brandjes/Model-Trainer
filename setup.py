@@ -46,11 +46,11 @@ def install_requirements():
             # Run the installer
             subprocess.run(["opencv_installer.exe"])
 
-            print("OpenCV installed successfully.")
 
             # Add OpenCV to the PATH
             add_opencv_to_path(os.getcwd())
 
+            print("OpenCV installed successfully.")
         else:
             print("Skipping OpenCV installation as it is already installed.")
 
