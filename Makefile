@@ -1,5 +1,5 @@
 # Made by	 : Diego Brandjes 
-# Date		 : 10-01-2024 
+# Date		 : 11-01-2024 
 
 # Makefile for image annotation and creating a trained model
 
