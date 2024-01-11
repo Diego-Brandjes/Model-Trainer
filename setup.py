@@ -3,20 +3,16 @@ import requests
 import zipfile
 import io
 import os
+import sys
 
 # INSTALLER FOR UNIX SYSTEMS
 def check_opencv_installed():
     try:
-        # Attempt to import OpenCV
-        import cv2
         subprocess.run("opencv_version", shell=True, check=True)
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python"])
 
         print("OpenCV is already installed.")
         return True
-    
-    except ImportError:
-        print("OpenCV is not present or installed correctly.")
-        return False
     
     except subprocess.CalledProcessError:
             print("OpenCV is not present or installed correctly.")
@@ -52,6 +48,9 @@ def install_requirements():
 
     except Exception as e:
         print(f"Error: {e}")
+
+    finally:
+        input("Press enter to close the installer")
 
 if __name__ == "__main__":
     install_requirements()
