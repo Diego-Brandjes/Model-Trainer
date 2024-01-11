@@ -28,6 +28,7 @@ OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 BOX_SIZE					= 30
 IMAGE_SIZE					= 128
+STAGES						= 26
 
 
 load_folders:
@@ -74,7 +75,7 @@ train-s:
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
-		-numStages 30
+		-numStages $(STAGES)
 
 # Clear files
 clean:
