@@ -19,14 +19,9 @@ def check_opencv_installed():
             print(opencv_path)
             add_opencv_to_path(opencv_path)
 
-            # Attempt to import OpenCV
-            import cv2
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python"])
             subprocess.run("opencv_version", shell=True, check=True)
             return True
-    
-        except ImportError:
-            print("OpenCV is not present or installed correctly.")
-            return False
         
         except subprocess.CalledProcessError:
             print("OpenCV is not present or installed correctly.")
