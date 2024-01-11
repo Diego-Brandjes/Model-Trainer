@@ -1,5 +1,5 @@
 # Made by	 : Diego Brandjes 
-# Date		 : 10-01-2024 
+# Date		 : 11-01-2024 
 
 # Makefile for image annotation and creating a trained model
 
@@ -26,6 +26,7 @@ OUTPUT_FOLDER				= output
 INPUT_FOLDER				= input
 BOX_SIZE					= 30
 IMAGE_SIZE					= 300
+STAGES						= 26
 
 RED := $(shell tput setaf 1)
 GREEN := $(shell tput setaf 2)
@@ -73,7 +74,7 @@ train-s:
 		-numNeg $(NEGATIVE_AMOUNT) \
 		-w $(BOX_SIZE) \
 		-h $(BOX_SIZE) \
-		-numStages 30
+		-numStages $(STAGES)
 
 # Clear files
 clean:
