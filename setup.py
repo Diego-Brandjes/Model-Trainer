@@ -9,11 +9,18 @@ def check_opencv_installed():
     try:
         # Attempt to import OpenCV
         import cv2
+        subprocess.run("opencv_version", shell=True, check=True)
+
         print("OpenCV is already installed.")
         return True
+    
     except ImportError:
         print("OpenCV is not present or installed correctly.")
         return False
+    
+    except subprocess.CalledProcessError:
+            print("OpenCV is not present or installed correctly.")
+            return False
 
 def install_requirements():
     try:
