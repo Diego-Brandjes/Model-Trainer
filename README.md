@@ -14,6 +14,15 @@ I also included a simple setup file that will download the required files. OpenC
 # Requires pip!
 python3 setup.py    
 ```
+## Example
+
+Here is an example of the included .xml trained using 263 positive and 387 negative pictures.
+
+### Using the created model
+![Alt text](https://i.ibb.co/zRLS0j6/pc.png "Using the created xml")
+
+### Using the standard opencv model
+![Alt text](https://i.ibb.co/PhP9N1w/opencv.png "Using the OpenCV")
 
 
 ## Training
