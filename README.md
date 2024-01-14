@@ -25,7 +25,9 @@ Here is an example of the included .xml trained using 263 positive and 387 negat
 ![Alt text](https://i.ibb.co/PhP9N1w/opencv.png "Using the OpenCV")
 
 TP meaning true postives,
+
 FP meaning false positives,
+
 FN meaning false negatives
 
 ## Training
